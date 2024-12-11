@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "casm-bset"
-version = "2.0a1"
+version = "2.0a2"
 authors = [
   { name="CASM developers", email="casm-developers@lists.engr.ucsb.edu" },
 ]
@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
     "jinja2",
-    "libcasm-configuration>=2.0a5",
+    "libcasm-configuration>=2.0a6",
     "numpy",
     "opt-einsum",
     "scipy",
