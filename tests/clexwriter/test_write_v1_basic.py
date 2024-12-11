@@ -1230,7 +1230,7 @@ def test_v1_basic_occ_fcc_local_1(session_shared_datadir, tmp_path):
         equivalent_generating_op_indices,
     ) = casmclust.equivalents_info_from_dict(
         data=equivalents_info,
-        prim=prim.xtal_prim,
+        xtal_prim=prim.xtal_prim,
     )
 
     translations = []
