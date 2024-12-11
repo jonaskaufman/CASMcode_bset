@@ -3,7 +3,7 @@ import json
 import os
 import pathlib
 import tarfile
-from typing import Any, Union
+import typing
 
 import libcasm.xtal as xtal
 
@@ -39,7 +39,7 @@ def read_required(path: pathlib.Path, gz: bool = False):
 def read_contents(
     parent_dir: pathlib.Path,
     relpath: pathlib.Path,
-    default: Any = None,
+    default: typing.Any = None,
     quiet: bool = False,
 ):
     """Read file contents, whether it is an individual or inside an archive
@@ -95,7 +95,7 @@ def read_contents(
         return default
 
 
-def read_optional(path: pathlib.Path, default: Any = None, gz: bool = False):
+def read_optional(path: pathlib.Path, default: typing.Any = None, gz: bool = False):
     path = pathlib.Path(path)
     if path.exists():
         if gz is True:
@@ -197,7 +197,7 @@ def safe_dump(
         _safe_write(data, path, gz=gz)
 
 
-def get(data: Union[dict, list], path: list, default: Any = None):
+def get(data: typing.Union[dict, list], path: list, default: typing.Any = None):
     """Get item from a heirarchical data structure of dict and lists
 
     Parameters
