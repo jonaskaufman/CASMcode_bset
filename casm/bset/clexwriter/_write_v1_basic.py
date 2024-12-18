@@ -4,6 +4,7 @@ import time
 from typing import Optional
 
 import libcasm.clusterography as casmclust
+import libcasm.configuration as casmconfig
 from casm.bset.clexwriter._cpp_str import (
     CppFormatProperties,
 )
@@ -41,6 +42,7 @@ class WriterV1Basic:
 
     def __init__(
         self,
+        prim: casmconfig.Prim,
         project_name: str,
         bset_name: str,
         is_periodic: bool,
@@ -60,6 +62,8 @@ class WriterV1Basic:
 
         Parameters
         ----------
+        prim: libcasm.configuration.Prim
+            The prim.
         project_name: str
             Project name. Used to construct the Clexulator class name. This must
             consist of alphanumeric characters and underscores only. The first
@@ -214,7 +218,9 @@ class WriterV1Basic:
             function index (i..e ``occ_var_name.format(b=0, m=1)``).
         - `"occ_var_desc"`: str, A description of the occupation
             variable, including a description of the subscript indices.
-            
+        - `"occ_var_indices"`: list[list[str, str]], A list of lists, where each sublist
+          contains the variable name and description for each subscript index.
+        
         """
 
         ## set linear_function_indices
@@ -252,6 +258,7 @@ class WriterV1Basic:
             sys.stdout.flush()
 
         _complete_neighborhood, _function_neighborhoods = make_neighborhoods(
+            prim=prim,
             is_periodic=is_periodic,
             prim_neighbor_list=prim_neighbor_list,
             clusters=clusters,
@@ -398,6 +405,7 @@ class WriterV1Basic:
             sys.stdout.flush()
 
         self.site_bfuncs, self.site_bfuncs_variables_needed_at = make_site_bfuncs(
+            prim=prim,
             is_periodic=is_periodic,
             prim_neighbor_list=self.prim_neighbor_list,
             clusters=clusters,

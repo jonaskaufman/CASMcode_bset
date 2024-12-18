@@ -277,8 +277,11 @@ class MakeVariableName:
         cluster_site_index: Optional[int] = None,
         component_index: Optional[int] = None,
         site_basis_function_index: Optional[int] = None,
-        local_discrete_dof: list[str] = [],
+        local_discrete_dof: Optional[list[str]] = None,
     ) -> str:
+        if local_discrete_dof is None:
+            local_discrete_dof = list()
+
         def make_variable_symbol(xtal_prim, key, sublattice_index):
             if sublattice_index is not None:
                 dof = xtal_prim.local_dof()[sublattice_index]
@@ -332,8 +335,11 @@ def make_variable_name(
     cluster_site_index: Optional[int] = None,
     component_index: Optional[int] = None,
     site_basis_function_index: Optional[int] = None,
-    local_discrete_dof: list[str] = [],
+    local_discrete_dof: Optional[list[str]] = None,
 ):
+    if local_discrete_dof is None:
+        local_discrete_dof = list()
+
     f = MakeVariableName()
     return f(
         xtal_prim=xtal_prim,
@@ -414,7 +420,7 @@ def make_cluster_variables(
     key: str,
     cluster: Cluster,
     make_variable_name_f: Optional[Callable] = None,
-    local_discrete_dof: list[str] = [],
+    local_discrete_dof: Optional[list[str]] = None,
 ):
     """Construct the variable list for a cluster
 
@@ -432,7 +438,7 @@ def make_cluster_variables(
         Custom classes should have the same `__call__` signature as
         :class:`~casm.bset.cluster_functions.MakeVariableName`, and have
         `occ_var_name` and `occ_var_desc` attributes.
-    local_discrete_dof: list[str]
+    local_discrete_dof: Optional[list[str]] = None
         The types of local discrete degree of freedom (DoF).
 
     Returns
@@ -448,6 +454,8 @@ def make_cluster_variables(
     """
     if make_variable_name_f is None:
         make_variable_name_f = make_variable_name
+    if local_discrete_dof is None:
+        local_discrete_dof = list()
 
     if key in local_discrete_dof:
         discrete_dof = prim.xtal_prim.occ_dof()
@@ -1416,7 +1424,7 @@ class OrbitMatrixRepBuilder:
         cluster: Cluster,
         phenomenal: Optional[Cluster] = None,
         make_variable_name_f: Optional[Callable] = None,
-        occ_site_functions: list[dict] = [],
+        occ_site_functions: Optional[list[dict]] = None,
     ):
         """
 
@@ -1463,6 +1471,8 @@ class OrbitMatrixRepBuilder:
               as ``value[function_index][occupant_index]``.
 
         """
+        if occ_site_functions is None:
+            occ_site_functions = list()
 
         if generating_group is not prim.factor_group:
             if generating_group.head_group is not prim.factor_group:

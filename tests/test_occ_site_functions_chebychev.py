@@ -39,7 +39,8 @@ def test_chebychev_occ_fcc_1a(session_shared_datadir):
             ["B", "C"],
         ],
     )
-    # print(xtal.pretty_json(xtal_prim.to_dict()))
+    print(xtal.pretty_json(xtal_prim.to_dict()))
+    assert False
 
     builder = build_cluster_functions(
         prim=xtal_prim,
@@ -70,6 +71,8 @@ def test_chebychev_occ_fcc_1a(session_shared_datadir):
         )
         assert np.allclose(builder.occ_site_functions[b]["value"], expected)
 
+    # # If there are intentional changes,
+    # # uncomment this to regenerate the expected values:
     # import os
     # import pathlib
     # from utils.helpers import print_expected_cluster_functions_detailed
@@ -154,6 +157,8 @@ def test_chebychev_occ_fcc_1b(session_shared_datadir):
 
     ## Compare to functions generated in test 1a ##
 
+    # # If there are intentional changes,
+    # # uncomment this to regenerate the expected values:
     # import os
     # import pathlib
     # from utils.helpers import print_expected_cluster_functions_detailed
@@ -237,6 +242,8 @@ def test_chebychev_occ_fcc_2a(session_shared_datadir):
         )
         assert np.allclose(builder.occ_site_functions[b]["value"], expected)
 
+    # # If there are intentional changes,
+    # # uncomment this to regenerate the expected values:
     # import os
     # import pathlib
     # from utils.helpers import print_expected_cluster_functions_detailed
@@ -361,6 +368,8 @@ def test_chebychev_occ_fcc_2b(session_shared_datadir):
         )
         assert np.allclose(builder.occ_site_functions[b]["value"], expected)
 
+    # # If there are intentional changes,
+    # # uncomment this to regenerate the expected values:
     # import os
     # import pathlib
     # from utils.helpers import print_expected_cluster_functions_detailed
@@ -494,6 +503,8 @@ def test_chebychev_occ_fcc_3a(session_shared_datadir):
         )
         assert np.allclose(builder.occ_site_functions[b]["value"], expected)
 
+    # # If there are intentional changes,
+    # # uncomment this to regenerate the expected values:
     # import os
     # import pathlib
     # from utils.helpers import print_expected_cluster_functions_detailed
@@ -673,6 +684,8 @@ def test_chebychev_occ_fcc_3b(session_shared_datadir):
         )
         assert np.allclose(builder.occ_site_functions[b]["value"], expected)
 
+    # # If there are intentional changes,
+    # # uncomment this to regenerate the expected values:
     # import os
     # import pathlib
     # from utils.helpers import print_expected_cluster_functions_detailed

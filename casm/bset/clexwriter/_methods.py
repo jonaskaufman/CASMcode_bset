@@ -33,6 +33,7 @@ from libcasm.clexulator import (
 
 
 def make_neighborhoods(
+    prim: casmconfig.Prim,
     is_periodic: bool,
     prim_neighbor_list: PrimNeighborList,
     clusters: list[list[casmclust.Cluster]],
@@ -43,6 +44,9 @@ def make_neighborhoods(
 
     Parameters
     ----------
+    prim: libcasm.configuration.Prim
+        The prim.
+
     is_periodic: bool
         Whether the Clexulator is for a periodic basis set or local basis set.
 
@@ -142,6 +146,7 @@ def make_neighborhoods(
             #     All point functions for this cluster orbit, for each point corr site
             #     point_functions[i_func][nlist_index][i_point_function]
             point_functions = make_point_functions(
+                prim=prim,
                 prim_neighbor_list=prim_neighbor_list,
                 orbit=clusters[i_orbit],
                 orbit_functions=orbit_functions,
@@ -323,6 +328,8 @@ def make_orbit_bfuncs(
         - ``"cpp"``: str, C++ expression for evaluating the global correlation
           contribution
         - ``"latex_prototype"``: str, Latex formula for the prototype
+        - ``""latex_prototype_with_neighbor_indices": str, Latex formula for the
+          prototype using neighbor site indices instead of cluster site indices
         - ``latex_orbit"``: str, Latex formula for the orbit contribution
 
     variables_needed: dict[str,list[list[int]]]
@@ -349,6 +356,7 @@ def make_orbit_bfuncs(
                 "linear_orbit_index": linear_orbit_index,
                 "cpp": "1",
                 "latex_prototype": "1",
+                "latex_prototype_with_neighbor_indices": "1",
                 "latex_orbit": "1",
             }
         )
@@ -402,6 +410,16 @@ def make_orbit_bfuncs(
                             cpp_fmt=cpp_fmt,
                             mode="latex",
                             label_site_using="cluster_site_index",
+                        ),
+                        "latex_prototype_with_neighbor_indices": orbit_bfunc_cpp_str(
+                            # only functions from prototype cluster
+                            orbit_functions=prototype_functions,
+                            # orbit_size=len(orbit_functions) -> same normalization
+                            orbit_size=len(orbit_functions),
+                            prim_neighbor_list=prim_neighbor_list,
+                            cpp_fmt=cpp_fmt,
+                            mode="latex",
+                            label_site_using="neighborhood_site_index",
                         ),
                         "latex_orbit": orbit_bfunc_cpp_str(
                             orbit_functions=orbit_functions,
@@ -497,6 +515,7 @@ def _make_site_bfuncs_data(
 
 
 def make_site_bfuncs(
+    prim: casmconfig.Prim,
     is_periodic: bool,
     prim_neighbor_list: PrimNeighborList,
     clusters: list[list[casmclust.Cluster]],
@@ -515,6 +534,8 @@ def make_site_bfuncs(
 
     Parameters
     ----------
+    prim: libcasm.configuration.Prim
+        The prim.
     is_periodic: bool
         Whether the Clexulator is for a periodic basis set or local basis set.
     prim_neighbor_list: libcasm.clexulator.PrimNeighborList
@@ -611,6 +632,7 @@ def make_site_bfuncs(
         if is_periodic:
             # take global functions (non-duplicating) and make all point functions
             point_functions = make_point_functions(
+                prim=prim,
                 prim_neighbor_list=prim_neighbor_list,
                 orbit=orbit,
                 orbit_functions=functions[i_orbit],
@@ -663,6 +685,7 @@ def _print_latex_site_bfuncs(builder):
 
     is_periodic = builder._phenomenal is not None
     site_bfuncs, site_bfuncs_variables_needed_at = make_site_bfuncs(
+        prim=builder._prim,
         is_periodic=is_periodic,
         prim_neighbor_list=builder.prim_neighbor_list,
         clusters=builder.clusters,
@@ -945,6 +968,7 @@ class ClexulatorWriter:
             sys.stdout.flush()
 
         writer = self.writer_type(
+            prim=prim,
             i_clex=None,
             clusters=builder.clusters,
             functions=builder.functions,
@@ -994,6 +1018,7 @@ class ClexulatorWriter:
                     sys.stdout.flush()
 
                 writer = self.writer_type(
+                    prim=prim,
                     i_clex=i_clex,
                     clusters=builder.equivalent_clusters[i_clex],
                     functions=builder.equivalent_functions[i_clex],

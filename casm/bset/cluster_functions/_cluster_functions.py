@@ -15,6 +15,7 @@ from casm.bset.cluster_functions._discrete_functions import (
 from casm.bset.cluster_functions._matrix_rep import (
     MakeVariableName,
     OrbitMatrixRepBuilder,
+    make_variable_name,
 )
 from casm.bset.cluster_functions._misc import (
     orbits_to_dict,
@@ -359,18 +360,24 @@ def _make_site_functions_data(
     return site_functions_data
 
 
-def assign_neighborhood_site_index(
+def update_variables(
+    prim: casmconfig.Prim,
     cluster: casmclust.Cluster,
     function: PolynomialFunction,
     prim_neighbor_list: PrimNeighborList,
     translation: Optional[np.ndarray] = None,
+    make_variable_name_f: Optional[Callable] = None,
+    local_discrete_dof: Optional[list[str]] = None,
 ):
-    """Assign neighborhood_site_index for function variables
+    """Update variables after transforming cluster function to assign
+    neighborhood_site_index and name for function variables
 
     Parameters
     ----------
+    prim: libcasm.configuration.Prim
+        The prim
     cluster: libcasm.clusterography.Cluster
-        The cluster associated with the function
+        The cluster associated with the function.
     function: casm.bset.polynomial_functions.PolynomialFunction
         A PolynomialFunction with variables that have cluster_site_index set
         referring to which site in `cluster` they are associated with.
@@ -378,15 +385,40 @@ def assign_neighborhood_site_index(
         The neighbor list
     translation: Optional[np.ndarray],
         Optional translation to apply to cluster.
-
+    make_variable_name_f: Optional[Callable] = None
+        Allows specifying a custom class to construct variable names. The default
+        class used is :class:`~casm.bset.cluster_functions.MakeVariableName`.
+        Custom classes should have the same `__call__` signature as
+        :class:`~casm.bset.cluster_functions.MakeVariableName`, and have
+        `occ_var_name` and `occ_var_desc` attributes.
+    local_discrete_dof: Optionla[list[str]] = None
+        The types of local discrete degree of freedom (DoF).
     """
+    if make_variable_name_f is None:
+        make_variable_name_f = make_variable_name
+    if local_discrete_dof is None:
+        local_discrete_dof = list()
+
     for var in function.variables:
         if var.cluster_site_index is not None:
             integral_site_coordinate = cluster[var.cluster_site_index]
             if translation is not None:
                 integral_site_coordinate = integral_site_coordinate + translation
+
+            # Set neighborhood site index
             var.neighborhood_site_index = prim_neighbor_list.neighbor_index(
                 integral_site_coordinate
+            )
+
+            # Set variable name:
+            var.name = make_variable_name_f(
+                xtal_prim=prim.xtal_prim,
+                key=var.key,
+                site_basis_function_index=var.site_basis_function_index,
+                component_index=var.component_index,
+                cluster_site_index=var.cluster_site_index,
+                sublattice_index=integral_site_coordinate.sublattice(),
+                local_discrete_dof=local_discrete_dof,
             )
 
 
@@ -398,6 +430,8 @@ def make_equivalent_cluster_basis_sets(
     verbose: bool = False,
     prim: Optional[casmconfig.Prim] = None,
     i_orbit: Optional[int] = None,
+    make_variable_name_f: Optional[Callable] = None,
+    local_discrete_dof: Optional[list[str]] = None,
 ) -> tuple[list[casmclust.Cluster], list[list[PolynomialFunction]]]:
     orbit = []
     orbit_basis_sets = []
@@ -425,10 +459,13 @@ def make_equivalent_cluster_basis_sets(
             M = M_list[0]
             S = FunctionRep(matrix_rep=M)
             f_equiv = S * f_prototype
-            assign_neighborhood_site_index(
+            update_variables(
+                prim=prim,
                 cluster=equiv_cluster,
                 function=f_equiv,
                 prim_neighbor_list=prim_neighbor_list,
+                make_variable_name_f=make_variable_name_f,
+                local_discrete_dof=local_discrete_dof,
             )
             assert f_equiv.variables is not f_prototype.variables
             for i in range(len(f_prototype.variables)):
@@ -1328,10 +1365,13 @@ class ClusterFunctionsBuilder:
                 M = M_list[0]
                 S = FunctionRep(matrix_rep=M)
                 f_equiv = S * f_prototype
-                assign_neighborhood_site_index(
+                update_variables(
+                    prim=self._prim,
                     cluster=equiv_cluster,
                     function=f_equiv,
                     prim_neighbor_list=self.prim_neighbor_list,
+                    make_variable_name_f=self._make_variable_name_f,
+                    local_discrete_dof=self.local_discrete_dof,
                 )
                 assert f_equiv.variables is not f_prototype.variables
                 for i in range(len(f_prototype.variables)):
@@ -1434,7 +1474,7 @@ class ClusterFunctionsBuilder:
                 print("Equivalent phenomenal cluster:")
                 site_rep = builder.phenomenal_generating_site_rep[i_clex]
                 equiv_phenomenal = site_rep * self.phenomenal
-                print(xtal.pretty_json(equiv_phenomenal.to_dict(self.prim.xtal_prim)))
+                print(xtal.pretty_json(equiv_phenomenal.to_dict(self._prim.xtal_prim)))
                 print()
 
             _equiv_orbit_basis_sets = []
@@ -1465,10 +1505,13 @@ class ClusterFunctionsBuilder:
                 for f_prototype in orbit_basis_sets[i_clust]:
                     S = FunctionRep(matrix_rep=M)
                     f_equiv = S * f_prototype
-                    assign_neighborhood_site_index(
+                    update_variables(
+                        prim=self._prim,
                         cluster=equiv_cluster,
                         function=f_equiv,
                         prim_neighbor_list=self.prim_neighbor_list,
+                        make_variable_name_f=self._make_variable_name_f,
+                        local_discrete_dof=self.local_discrete_dof,
                     )
                     assert f_equiv.variables is not f_prototype.variables
                     for i in range(len(f_prototype.variables)):
@@ -1610,9 +1653,12 @@ class ClusterFunctionsBuilder:
 
 
 def make_point_functions(
+    prim: casmconfig.Prim,
     prim_neighbor_list: PrimNeighborList,
     orbit: list[casmclust.Cluster],
     orbit_functions: list[list[PolynomialFunction]],
+    make_variable_name_f: Optional[Callable] = None,
+    local_discrete_dof: Optional[dict] = None,
 ):
     """Construct point functions
 
@@ -1643,6 +1689,16 @@ def make_point_functions(
 
         This should generally be the functions for one orbit as generated by
         :class:`ClusterFunctionsBuilder`.
+
+    make_variable_name_f: Optional[Callable] = None
+        Allows specifying a custom class to construct variable names. The default
+        class used is :class:`~casm.bset.cluster_functions.MakeVariableName`.
+        Custom classes should have the same `__call__` signature as
+        :class:`~casm.bset.cluster_functions.MakeVariableName`, and have
+        `occ_var_name` and `occ_var_desc` attributes.
+
+    local_discrete_dof: Optionla[list[str]] = None
+        The types of local discrete degree of freedom (DoF).
 
     Returns
     -------
@@ -1683,14 +1739,15 @@ def make_point_functions(
                 for site in equiv:
                     if site.sublattice() != point.sublattice():
                         continue
-                    # copy function
                     f = orbit_functions[i_equiv][i_func].copy()
-                    # assign neighborhood_site_index with translation to point
-                    assign_neighborhood_site_index(
+                    update_variables(
+                        prim=prim,
                         cluster=equiv,
                         function=f,
                         prim_neighbor_list=prim_neighbor_list,
                         translation=-site.unitcell(),
+                        make_variable_name_f=make_variable_name_f,
+                        local_discrete_dof=local_discrete_dof,
                     )
                     # add to point functions
                     equiv_functions_by_point.append(f)
