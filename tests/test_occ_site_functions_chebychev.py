@@ -39,8 +39,7 @@ def test_chebychev_occ_fcc_1a(session_shared_datadir):
             ["B", "C"],
         ],
     )
-    print(xtal.pretty_json(xtal_prim.to_dict()))
-    assert False
+    # print(xtal.pretty_json(xtal_prim.to_dict()))
 
     builder = build_cluster_functions(
         prim=xtal_prim,
@@ -58,9 +57,6 @@ def test_chebychev_occ_fcc_1a(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0, 1, 2, 3]:
         expected = np.array(
@@ -133,9 +129,6 @@ def test_chebychev_occ_fcc_1b(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0, 1, 3]:
         expected = np.array(
@@ -219,9 +212,6 @@ def test_chebychev_occ_fcc_2a(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0]:
         expected = np.array(
@@ -322,9 +312,6 @@ def test_chebychev_occ_fcc_2b(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0]:
         expected = np.array(
@@ -468,9 +455,6 @@ def test_chebychev_occ_fcc_3a(session_shared_datadir):
     )
     functions, clusters = (builder.functions, builder.clusters)
 
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
-
     for b in [0]:
         # "A.up", "A.down"
         expected = np.array(
@@ -604,9 +588,6 @@ def test_chebychev_occ_fcc_3b(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0]:
         # "A.up", "A.down"

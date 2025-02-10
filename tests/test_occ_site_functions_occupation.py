@@ -61,9 +61,6 @@ def test_occ_fcc_1a(session_shared_datadir):
     )
     functions, clusters = (builder.functions, builder.clusters)
 
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
-
     for b in [0, 1, 2, 3]:
         expected = np.array(
             [
@@ -131,9 +128,6 @@ def test_occ_fcc_1b(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0, 1, 3]:
         expected = np.array(
@@ -209,9 +203,6 @@ def test_occ_fcc_2a(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0]:
         expected = np.array(
@@ -308,9 +299,6 @@ def test_occ_fcc_2b(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0]:
         expected = np.array(
@@ -454,9 +442,6 @@ def test_occ_fcc_3a(session_shared_datadir):
     )
     functions, clusters = (builder.functions, builder.clusters)
 
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
-
     for b in [0]:
         # "C", "A.up", "A.down"
         expected = np.array(
@@ -582,9 +567,6 @@ def test_occ_fcc_3b(session_shared_datadir):
     )
     functions, clusters = (builder.functions, builder.clusters)
 
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
-
     for b in [0]:
         # "A.up", "A.down", "C"
         expected = np.array(
@@ -612,7 +594,7 @@ def test_occ_fcc_3b(session_shared_datadir):
     # import os
     # import pathlib
     # from utils.helpers import print_expected_cluster_functions_detailed
-
+    #
     # print_expected_cluster_functions_detailed(
     #     functions,
     #     file=pathlib.Path(os.path.realpath(__file__)).parent
@@ -719,9 +701,6 @@ def test_occ_fcc_4a(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0]:
         # "A"
@@ -900,9 +879,6 @@ def test_occ_fcc_4b(session_shared_datadir):
     )
     functions, clusters = (builder.functions, builder.clusters)
 
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
-
     for b in [0]:
         # "A"
         expected = np.array(
@@ -1057,9 +1033,6 @@ def test_occ_fcc_5a(session_shared_datadir):
         verbose=False,
     )
     functions, clusters = (builder.functions, builder.clusters)
-
-    _occ_site_functions = builder.occ_site_functions.copy()
-    print(xtal.pretty_json(_occ_site_functions))
 
     for b in [0]:
         # "A.up, A.down"
