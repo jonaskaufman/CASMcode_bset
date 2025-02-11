@@ -3,6 +3,7 @@ import json
 import os
 
 import numpy as np
+import pytest
 
 import libcasm.clexulator as casmclex
 import libcasm.clusterography as casmclust
@@ -115,6 +116,35 @@ def test_v1_basic_occ_lowsym_1(session_shared_datadir, tmp_path):
 
     assert src_path == tmp_path / "TestProject_Clexulator_default.cc"
     assert local_src_path is None
+
+
+def test_v1_basic_occ_fcc_exception(session_shared_datadir, tmp_path):
+    """Test that an exception is raised when it's not the case that
+    ``g is prim.factor_group`` or ``g.head_group is prim.factor_group``,
+    where ``g = clex_basis_specs.cluster_specs.generating_group()``
+    """
+    xtal_prim = xtal_prims.FCC(
+        r=0.5,
+        occ_dof=["A", "B", "C"],
+    )
+    # prim = casmconfig.Prim(xtal_prim)
+
+    clex_basis_specs = make_clex_basis_specs(
+        prim=xtal_prim,
+        max_length=[0.0, 0.0, 1.01, 1.01],
+        global_max_poly_order=4,
+        occ_site_basis_functions_specs="occupation",
+    )
+
+    with pytest.raises(Exception):
+        src_path, local_src_path, prim_neighbor_list = write_clexulator(
+            prim=xtal_prim,
+            clex_basis_specs=clex_basis_specs,
+            bset_dir=tmp_path,
+            project_name="TestProject",
+            bset_name="default",
+            version="v1.basic",
+        )
 
 
 def test_v1_basic_occ_fcc_1(session_shared_datadir, tmp_path):

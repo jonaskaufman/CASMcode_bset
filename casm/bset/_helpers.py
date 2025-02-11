@@ -62,6 +62,24 @@ def as_ClexBasisSpecs(
         The ClexBasisSpecs
 
     """
+
+    if isinstance(x, ClexBasisSpecs):
+        msg = (
+            "Error: Inconsistency between `clex_basis_specs` and `prim` symmetry "
+            "objects. It is required that "
+            "``g is prim.factor_group``, or "
+            "``g.head_group is prim.factor_group``, where "
+            "``g = clex_basis_specs.cluster_specs.generating_group()``. "
+            "Make sure that the same `libcasm.configuration.Prim` instance is "
+            "used to make `clex_basis_specs` and "
+            "`build_cluster_functions` or `write_clexulator`."
+        )
+
+        g = x.cluster_specs.generating_group()
+        if g is not prim.factor_group:
+            if g.head_group is not prim.factor_group:
+                raise Exception(msg)
+
     if isinstance(x, (str, pathlib.Path)):
         print(x)
         with open(x, "r") as f:
