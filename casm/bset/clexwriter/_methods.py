@@ -2,7 +2,7 @@ import pathlib
 import re
 import sys
 import time
-from typing import Optional
+from typing import Callable, Optional
 
 import jinja2
 from sortedcontainers import SortedList
@@ -39,6 +39,8 @@ def make_neighborhoods(
     clusters: list[list[casmclust.Cluster]],
     functions: list[list[list[PolynomialFunction]]],
     linear_function_indices: Optional[set[int]] = None,
+    make_variable_name_f: Optional[Callable] = None,
+    local_discrete_dof: Optional[dict] = None,
 ):
     """Make the neighborhood lists for the functions
 
@@ -72,6 +74,15 @@ def make_neighborhoods(
         all functions will be included in the Clexulator. Otherwise,
         only the specified functions will be included in the Clexulator
 
+    make_variable_name_f: Optional[Callable] = None
+        Allows specifying a custom class to construct variable names. The default
+        class used is :class:`~casm.bset.cluster_functions.MakeVariableName`.
+        Custom classes should have the same `__call__` signature as
+        :class:`~casm.bset.cluster_functions.MakeVariableName`, and have
+        `occ_var_name` and `occ_var_desc` attributes.
+
+    local_discrete_dof: Optional[list[str]] = None
+        The types of local discrete degree of freedom (DoF).
 
     Returns
     -------
@@ -150,6 +161,8 @@ def make_neighborhoods(
                 prim_neighbor_list=prim_neighbor_list,
                 orbit=clusters[i_orbit],
                 orbit_functions=orbit_functions,
+                make_variable_name_f=make_variable_name_f,
+                local_discrete_dof=local_discrete_dof,
             )
 
             # Note: point_functions contains duplicates, but that's OK for generating
@@ -523,6 +536,8 @@ def make_site_bfuncs(
     occ_site_functions: list[dict],
     cpp_fmt: CppFormatProperties,
     linear_function_indices: Optional[set[int]] = None,
+    make_variable_name_f: Optional[Callable] = None,
+    local_discrete_dof: Optional[dict] = None,
 ) -> tuple[list[dict], list[dict[str, list[list[int]]]]]:
     """Convert clusters and functions to data used by Jinja templates to write the \
     point correlation evaluating methods.
@@ -563,6 +578,14 @@ def make_site_bfuncs(
         The linear indices of the functions that will be included. If None,
         all functions will be included in the Clexulator. Otherwise,
         only the specified functions will be included in the Clexulator
+    make_variable_name_f: Optional[Callable] = None
+        Allows specifying a custom class to construct variable names. The default
+        class used is :class:`~casm.bset.cluster_functions.MakeVariableName`.
+        Custom classes should have the same `__call__` signature as
+        :class:`~casm.bset.cluster_functions.MakeVariableName`, and have
+        `occ_var_name` and `occ_var_desc` attributes.
+    local_discrete_dof: Optional[list[str]] = None
+        The types of local discrete degree of freedom (DoF).
 
     Returns
     -------
@@ -636,6 +659,8 @@ def make_site_bfuncs(
                 prim_neighbor_list=prim_neighbor_list,
                 orbit=orbit,
                 orbit_functions=functions[i_orbit],
+                make_variable_name_f=make_variable_name_f,
+                local_discrete_dof=local_discrete_dof,
             )
         else:
             point_functions = make_local_point_functions(
@@ -693,6 +718,8 @@ def _print_latex_site_bfuncs(builder):
         occ_site_functions=builder.occ_site_functions,
         cpp_fmt=CppFormatProperties(),
         linear_function_indices=None,
+        make_variable_name_f=builder._make_variable_name_f,
+        local_discrete_dof=builder.local_discrete_dof,
     )
 
     print(
@@ -957,6 +984,8 @@ class ClexulatorWriter:
             occ_site_functions=builder.occ_site_functions,
             occ_site_functions_info=builder.occ_site_functions_info,
             linear_function_indices=self.linear_function_indices,
+            make_variable_name_f=builder._make_variable_name_f,
+            local_discrete_dof=builder.local_discrete_dof,
             cpp_fmt=self.cpp_fmt,
             verbose=verbose,
         )

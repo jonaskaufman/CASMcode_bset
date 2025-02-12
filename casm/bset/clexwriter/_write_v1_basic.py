@@ -1,7 +1,7 @@
 import copy
 import sys
 import time
-from typing import Optional
+from typing import Callable, Optional
 
 import libcasm.clusterography as casmclust
 import libcasm.configuration as casmconfig
@@ -53,6 +53,8 @@ class WriterV1Basic:
         occ_site_functions: list[dict],
         occ_site_functions_info: dict,
         linear_function_indices: Optional[set[int]] = None,
+        make_variable_name_f: Optional[Callable] = None,
+        local_discrete_dof: Optional[dict] = None,
         cpp_fmt: Optional[CppFormatProperties] = None,
         verbose: bool = False,
     ):
@@ -126,6 +128,16 @@ class WriterV1Basic:
             all functions will be included in the Clexulator. Otherwise,
             only the specified functions will be included in the Clexulator. This
             is an experimental feature.
+
+        make_variable_name_f: Optional[Callable] = None
+            Allows specifying a custom class to construct variable names. The default
+            class used is :class:`~casm.bset.cluster_functions.MakeVariableName`.
+            Custom classes should have the same `__call__` signature as
+            :class:`~casm.bset.cluster_functions.MakeVariableName`, and have
+            `occ_var_name` and `occ_var_desc` attributes.
+
+        local_discrete_dof: Optional[list[str]] = None
+            The types of local discrete degree of freedom (DoF).
 
         cpp_fmt: Optional[CppFormatProperties] = None,
             C++ string formatting properties. If None, the default values are used.
@@ -264,6 +276,8 @@ class WriterV1Basic:
             clusters=clusters,
             functions=functions,
             linear_function_indices=linear_function_indices,
+            make_variable_name_f=make_variable_name_f,
+            local_discrete_dof=local_discrete_dof,
         )
 
         if verbose:
@@ -328,7 +342,7 @@ class WriterV1Basic:
         - ``"cpp"``: str, C++ expression for evaluating the global correlation
           contribution
         - ``"latex_prototype"``: str, Latex formula for the prototype cluster
-        - ``latex_orbit"``: str, Latex formula for the orbit contribution
+        - ``"latex_orbit"``: str, Latex formula for the orbit contribution
         
         """
 
@@ -413,6 +427,8 @@ class WriterV1Basic:
             occ_site_functions=self.occ_site_functions,
             cpp_fmt=self.cpp_fmt,
             linear_function_indices=self.linear_function_indices,
+            make_variable_name_f=make_variable_name_f,
+            local_discrete_dof=local_discrete_dof,
         )
 
         if verbose:

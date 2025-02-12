@@ -391,7 +391,7 @@ def update_variables(
         Custom classes should have the same `__call__` signature as
         :class:`~casm.bset.cluster_functions.MakeVariableName`, and have
         `occ_var_name` and `occ_var_desc` attributes.
-    local_discrete_dof: Optionla[list[str]] = None
+    local_discrete_dof: Optional[list[str]] = None
         The types of local discrete degree of freedom (DoF).
     """
     if make_variable_name_f is None:
