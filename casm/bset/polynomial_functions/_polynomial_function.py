@@ -595,7 +595,7 @@ class PolynomialFunction:
         self.monomial_exponents = self.tensor_coords_to_monomial_exponents()
         return self
 
-    def __imul__(self, c: Union[float | Variable]):
+    def __imul__(self, c: Union[float, Variable]):
         if isinstance(c, float):
             self.coeff *= c
             return self
@@ -621,12 +621,12 @@ class PolynomialFunction:
         else:
             raise NotImplementedError
 
-    def __mul__(self, c: Union[float | Variable]):
+    def __mul__(self, c: Union[float, Variable]):
         result = self.copy()
         result *= c
         return result
 
-    def __rmul__(self, c: Union[float | Variable]):
+    def __rmul__(self, c: Union[float, Variable]):
         return self * c
 
     def can_factor_by(self, var: Variable):
@@ -651,7 +651,7 @@ class PolynomialFunction:
                 return False
         return True
 
-    def __itruediv__(self, c: Union[float | Variable]):
+    def __itruediv__(self, c: Union[float, Variable]):
         if isinstance(c, float):
             self.coeff /= c
             return self
@@ -677,7 +677,7 @@ class PolynomialFunction:
         else:
             raise NotImplementedError
 
-    def __truediv__(self, c: Union[float | Variable]):
+    def __truediv__(self, c: Union[float, Variable]):
         result = self.copy()
         result /= c
         return result
