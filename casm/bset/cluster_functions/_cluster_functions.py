@@ -888,12 +888,12 @@ class ClusterFunctionsBuilder:
                 occ_var_desc=self.occ_site_functions_info.get("occ_var_desc"),
             )
         else:
-            self.occ_site_functions_info[
-                "occ_var_name"
-            ] = make_variable_name_f.occ_var_name
-            self.occ_site_functions_info[
-                "occ_var_desc"
-            ] = make_variable_name_f.occ_var_desc
+            self.occ_site_functions_info["occ_var_name"] = (
+                make_variable_name_f.occ_var_name
+            )
+            self.occ_site_functions_info["occ_var_desc"] = (
+                make_variable_name_f.occ_var_desc
+            )
         self._make_variable_name_f = make_variable_name_f
         """Callable: Function used to construct variable names.
         
@@ -1609,19 +1609,19 @@ class ClusterFunctionsBuilder:
             )
 
         # Write prim factor group info
-        equivalents_info[
-            "factor_group"
-        ] = config_io.symgroup_to_dict_with_group_classification(
-            self._prim, self._prim.factor_group
+        equivalents_info["factor_group"] = (
+            config_io.symgroup_to_dict_with_group_classification(
+                self._prim, self._prim.factor_group
+            )
         )
 
         # Write equivalents generating ops
         # (actually prim factor group indices of those ops and the
         #  translations can be figured out from the phenomenal cluster)
         orbit_matrix_rep_builder = self.orbit_matrix_rep_builders[0]
-        equivalents_info[
-            "equivalent_generating_ops"
-        ] = orbit_matrix_rep_builder.phenomenal_generating_indices
+        equivalents_info["equivalent_generating_ops"] = (
+            orbit_matrix_rep_builder.phenomenal_generating_indices
+        )
 
         # Write prototype orbits info
         tmp = {}

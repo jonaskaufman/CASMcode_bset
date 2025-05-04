@@ -1,4 +1,4 @@
-__version__ = "2.0a4"
+__version__ = "2.0.0"
 
 # Available at setup time due to pyproject.toml
 from setuptools import setup

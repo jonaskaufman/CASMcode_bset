@@ -5,6 +5,14 @@ All notable changes to `casm-bset` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-05-04
+
+### Changed
+
+- Restrict requires-python to ">=3.9,<3.14"
+- Run CI tests using Python 3.13
+
+
 ## [2.0a4] - 2025-02-12
 
 ### Fixed
